@@ -18,10 +18,16 @@ finFeatureNames<-features$V2[featureIndex]
 testdata_x<-testdata_x[,featureIndex]
 traindata_x<-traindata_x[,featureIndex]
 test<-cbind(testdata_x,tesdata_y,tesdata_subject)
-colnames(test)<-c(as.character(unlist(finFeatureNames)),"activity","subject")
+colnames(test)<-c(as.character(unlist(finFeatureNames)),"activity_id","subject")
 train<-cbind(traindata_x,traindata_y,traindata_subject)
-colnames(train)<-c(as.character(unlist(finFeatureNames)),"activity","subject")
+colnames(train)<-c(as.character(unlist(finFeatureNames)),"activity_id","subject")
 Findata<-rbind(test,train)
 
+### rename before merging
+names(activity_labels)<-c("activity_id","Activity_name")
+
 ########### summarising Data ########
-SummData<-Findata %>% group_by(activity,subject) %>% summarise_all(funs(mean))
+SummData<-Findata %>% group_by(activity_id,subject) %>% summarise_all(funs(mean))
+finaldata<-merge(SummData,activity_labels,By=activity_id,all.x = TRUE)
+
+write.table(finaldata,"C:\Course Work\Machine learning\Courseera\R\Course 3\Data.txt",row.names=FALSE)
